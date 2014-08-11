@@ -6,7 +6,8 @@ __author__ = 'Hardy.zheng'
 
 
 def urlsplit(url, scheme='', allow_fragments=True):
-    scheme, netloc, path, query, fragments = parse.urlsplit(url, scheme, allow_fragments)
+    scheme, netloc, path, query, fragments = \
+        parse.urlsplit(url, scheme, allow_fragments)
     return scheme
 
 
@@ -16,11 +17,6 @@ def fixpath(p):
 
 def utcnow():
     """Overridable version of utils.utcnow."""
-    if utcnow.override_time:
-        try:
-            return utcnow.override_time.pop(0)
-        except AttributeError:
-            return utcnow.override_time
     return datetime.datetime.utcnow()
 
 

@@ -36,23 +36,20 @@ def task_nic():
 
 
 def task_disk():
-    LOG.info("i' am nic task")
+    LOG.info("i' am disk task")
 
 
 def task_load():
-    LOG.info("i' am nic task")
+    LOG.info("i' am load task")
 
 
 class AgentManager(os_service.Service):
-
-    def __init__(self, namespace, default_discovery=None):
-        super(AgentManager, self).__init__()
 
     def start(self):
         for task in tasks:
             s = getattr(cfg.CONF, task, 60)
             if isinstance(s, cfg.Section):
-                interval = s.interval
+                interval = int(s.interval)
             else:
                 interval = s
             self.tg.add_timer(interval,

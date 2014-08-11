@@ -1,41 +1,38 @@
-#from cdsagent.utils import fixpath
+
 import ConfigParser
 import os
 
 
+from cdsagent import exc
+
+
+__author__ = 'Hardy.zheng'
+
 _DEFAULT_CONFIG = {
-
-        'core':{
-            'interval' : 600
-            },
-        'database':{
-            'connection':None
-            },
-        'log':{
-            'log_path':'/var/log/cds/cds-agent.log',
-            'log_level':1,
-            },
-        'nic':{
-            'interval':180,
-            },
-        'disk':{
-            'interval':240
-            },
-        'load':{
-
-            'interval':60
-            }
-        }
+    'core': {
+        'interval': 600},
+    'database': {
+        'connection': None},
+    'log': {
+        'path': '/var/log/cds/cds-agent.log',
+        'level': 1},
+    'nic': {
+        'interval': 180},
+    'disk': {
+        'interval': 240},
+    'load': {
+        'interval': 60}}
 
 
 class Section(object):
 
     def __init__(self, **kwargs):
-        for k ,v in kwargs.items():
+        for k, v in kwargs.items():
             setattr(self, k, v)
 
     def update(self, k, v):
-        setattr(self, k ,v)
+        setattr(self, k, v)
+
 
 class CoreSection(Section):
 
@@ -45,6 +42,7 @@ class CoreSection(Section):
         kw = _DEFAULT_CONFIG.get(self._name)
         super(CoreSection, self).__init__(**kw)
 
+
 class DatabaseSection(Section):
 
     _name = 'database'
@@ -52,6 +50,7 @@ class DatabaseSection(Section):
     def __init__(self):
         kw = _DEFAULT_CONFIG.get(self._name)
         super(DatabaseSection, self).__init__(**kw)
+
 
 class LogSection(Section):
 
@@ -61,6 +60,7 @@ class LogSection(Section):
         kw = _DEFAULT_CONFIG.get(self._name)
         super(LogSection, self).__init__(**kw)
 
+
 class NicSection(Section):
 
     _name = 'nic'
@@ -68,6 +68,7 @@ class NicSection(Section):
     def __init__(self):
         kw = _DEFAULT_CONFIG.get(self._name)
         super(NicSection, self).__init__(**kw)
+
 
 class DiskSection(Section):
 
@@ -77,6 +78,7 @@ class DiskSection(Section):
         kw = _DEFAULT_CONFIG.get(self._name)
         super(DiskSection, self).__init__(**kw)
 
+
 class LoadSection(Section):
 
     _name = 'load'
@@ -85,16 +87,16 @@ class LoadSection(Section):
         kw = _DEFAULT_CONFIG.get(self._name)
         super(LoadSection, self).__init__(**kw)
 
+
 class Factory():
     def get_section(self, name):
         sections = {
-                'core':lambda:CoreSection(),
-                'database':lambda:DatabaseSection(),
-                'log':lambda:LogSection(),
-                'nic':lambda:NicSection(),
-                'disk':lambda:DiskSection(),
-                'load':lambda:LoadSection(),
-                }
+            'core': lambda: CoreSection(),
+            'database': lambda: DatabaseSection(),
+            'log': lambda: LogSection(),
+            'nic': lambda: NicSection(),
+            'disk': lambda: DiskSection(),
+            'load': lambda: LoadSection()}
         return sections[name]()
 
 
@@ -137,51 +139,3 @@ CONF = Config()
 _config_file = './cds.cfg'
 
 CONF(_config_file)
-
-# tasks = {
-    # 'nic': lambda: task_nic(),
-    # 'mem': lambda: task_disk(),
-    # 'load': lambda: task_load()}
-
-
-# def task_nic():
-    # print "i' am nic task"
-
-
-# def task_disk():
-    # print "i' am disk task"
-
-
-# def task_load():
-    # print "i' am load task"
-
-
-# if __name__ == '__main__':
-
-    # for name in tasks:
-        # s =  getattr(CONF, name, 60)
-        # if isinstance(s, Section):
-            # print  s.interval
-
-        # else:
-            # print s
-        # tasks[name]()
-
-    #import time
-    #counter = 0
-    #while True:
-        ##conf = Config()
-        ##conf(config_file)
-        #print CONF.core.interval
-        #if counter == 4:
-            #reload_config()
-        #if counter == 8:
-            #reload_config()
-        #counter += 1
-        #time.sleep(4)
-
-        ##print conf.log.handler
-        ##conf = ConfigParser.ConfigParser()
-        ##conf.read(config_file)
-        ##c= conf.get('log', 'handler')
-
