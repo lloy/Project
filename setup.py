@@ -26,7 +26,7 @@ __author__ = 'Hardy.zheng'
 __version = '0.1'
 
 setup(
-    name='vnicagent',
+    name='cdsagent',
     version=__version,
     description='cds-agent ',
     author='hardy.Zheng',
