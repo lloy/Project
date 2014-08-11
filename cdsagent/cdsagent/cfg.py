@@ -36,55 +36,55 @@ class Section(object):
 
 class CoreSection(Section):
 
-    _name = 'core'
+    name = 'core'
 
     def __init__(self):
-        kw = _DEFAULT_CONFIG.get(self._name)
+        kw = _DEFAULT_CONFIG.get(self.name)
         super(CoreSection, self).__init__(**kw)
 
 
 class DatabaseSection(Section):
 
-    _name = 'database'
+    name = 'database'
 
     def __init__(self):
-        kw = _DEFAULT_CONFIG.get(self._name)
+        kw = _DEFAULT_CONFIG.get(self.name)
         super(DatabaseSection, self).__init__(**kw)
 
 
 class LogSection(Section):
 
-    _name = 'log'
+    name = 'log'
 
     def __init__(self):
-        kw = _DEFAULT_CONFIG.get(self._name)
+        kw = _DEFAULT_CONFIG.get(self.name)
         super(LogSection, self).__init__(**kw)
 
 
 class NicSection(Section):
 
-    _name = 'nic'
+    name = 'nic'
 
     def __init__(self):
-        kw = _DEFAULT_CONFIG.get(self._name)
+        kw = _DEFAULT_CONFIG.get(self.name)
         super(NicSection, self).__init__(**kw)
 
 
 class DiskSection(Section):
 
-    _name = 'disk'
+    name = 'disk'
 
     def __init__(self):
-        kw = _DEFAULT_CONFIG.get(self._name)
+        kw = _DEFAULT_CONFIG.get(self.name)
         super(DiskSection, self).__init__(**kw)
 
 
 class LoadSection(Section):
 
-    _name = 'load'
+    name = 'load'
 
     def __init__(self):
-        kw = _DEFAULT_CONFIG.get(self._name)
+        kw = _DEFAULT_CONFIG.get(self.name)
         super(LoadSection, self).__init__(**kw)
 
 

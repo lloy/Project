@@ -1,61 +1,58 @@
-#
-# Copyright 2013 Julien Danjou
-# Copyright 2014 Red Hat, Inc
-#
-# Authors: Julien Danjou <julien@danjou.info>
-#          Eoghan Glynn <eglynn@redhat.com>
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License. You may obtain
-# a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations
-# under the License.
-
-
-# from stevedore import extension
-
+from stevedore import driver
 from cdsagent.log import LOG
 from cdsagent import cfg
+from cdsagent import exc
 from cdsagent import service as os_service
 
-
-tasks = {
-    'nic': lambda: task_nic(),
-    'disk': lambda: task_disk(),
-    'load': lambda: task_load()}
+__author__ = 'Hardy.zheng'
 
 
-def task_nic():
-    LOG.info("i' am nic task")
-
-
-def task_disk():
-    LOG.info("i' am disk task")
-
-
-def task_load():
-    LOG.info("i' am load task")
+_TASKS = ['nic', 'disk', ]
 
 
 class AgentManager(os_service.Service):
 
+    def __init__(self):
+        super(AgentManager, self).__init__()
+
+    def get_manager(slef, namespace, name, load=True, args=()):
+        LOG.info('namespace: %s -->  name: %s' % (namespace, name))
+        return driver.DriverManager(
+            namespace=namespace,
+            name=name,
+            invoke_on_load=True,
+            invoke_args=())
+
     def start(self):
-        for task in tasks:
-            s = getattr(cfg.CONF, task, 60)
-            if isinstance(s, cfg.Section):
-                interval = int(s.interval)
-            else:
-                interval = s
+        LOG.info('zhengwei 0')
+        for task in _TASKS:
+            worker = getattr(cfg.CONF, task, None)
+            if not worker:
+                continue
+            if not hasattr(worker, 'poller'):
+                raise exc.NotSetPoller('not set poller in section %s configure file' % t, '0000-001-02')
+            poller = worker.poller
+            LOG.info('poller %s' % poller)
+            mgr = self.get_manager(task, poller, False)
+            LOG.info('zhengwei 1')
+
+            if not hasattr(mgr.driver, 'run'):
+                LOG.info('zhengwei 3')
+                raise exc.NotRunMethod('Not Found run() method in %s Poller' % task, '0000-003-01')
+
+            LOG.info('zhengwei 4')
+            interval = int(worker.interval)
+            LOG.info('type: %s, interval:%d' % (task, interval))
+
+            LOG.info('zhengwei mgr')
             self.tg.add_timer(interval,
                               self.interval_task,
-                              task=tasks[task])
+                              task=mgr.driver.run)
 
     @staticmethod
     def interval_task(task):
-        task()
+        try:
+            # LOG.info(task)
+            task()
+        except Exception, e:
+            LOG.error(str(e))
