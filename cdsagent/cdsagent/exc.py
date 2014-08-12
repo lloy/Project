@@ -12,11 +12,22 @@ class AgentException(Exception):
         super(AgentException, self).__init__(self.msg, self.code)
 
 
+class RunNovaClientError(AgentException):
+
+    def __init__(self, message):
+        errno = '0000-005-01'
+        super(RunNovaClientError, self).__init__(message, errno)
+
+
 class ConfigureException(AgentException):
+
     """
     errno = 0000-001-00
     """
-    pass
+
+    def __init__(self, message):
+        errno = '0000-001-00'
+        super(ConfigureException, self).__init__(message, errno)
 
 
 class NotSetPoller(ConfigureException):

@@ -1,5 +1,8 @@
+from cdsagent.exc import NotImplementedError
 
 __author__ = 'Hardy.zheng'
+
+
 class Connection(object):
 
     def __init__(self, url):
@@ -10,6 +13,6 @@ class Connection(object):
     def get_rx_resources(self, ip):
         raise NotImplementedError('rx traffic not implemented')
 
-    classmethod
+    @classmethod
     def get_tx_resources(self, ip):
         raise NotImplementedError('tx traffic not implemented')
