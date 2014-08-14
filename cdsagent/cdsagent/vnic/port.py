@@ -9,13 +9,7 @@ __email__ = 'wei.zheng@yun-idc.com'
 conf = cfg.CONF
 
 
-def _setapi():
-    namespace = conf.float_ip.name
-    name = conf.float_ip.api
-    return utils.get_manager(namespace, name, load=True, args=())
-
-
-def BasePoller(object):
+class BasePoller(object):
 
     def __init__(self):
         self.api = None
@@ -40,6 +34,8 @@ class PortPoller(BasePoller):
     def __init__(self):
         super(PortPoller, self).__init__()
         self.sections = ['float_ip', 'fetcher', 'pusher']
+        self.rx = 'in'
+        self.tx = 'out'
         self.setpoller()
 
     def set_api(self):
@@ -77,7 +73,43 @@ class PortPoller(BasePoller):
         return self.api.driver.get_floating_ips()
 
     def clear(self):
-        pass
+        self.pusher.clear()
+
+    def get_packet(self, ip, packets_set):
+        rxs = {}
+        txs = {}
+        for count in packets_set:
+            for inpacket in count[self.rx].split('\n'):
+                if ip in inpacket:
+                    self._count_packet(rxs, ip, inpacket, sign='rx')
+                    break
+            for outpacket in count[self.tx].split('\n'):
+                if ip in outpacket:
+                    self._count_packet(txs, ip, outpacket, sign='tx')
+                    break
+        if rxs and txs:
+            return rxs['rpacket'], rxs['rbyte'], txs['tpacket'], txs['tbyte']
+        elif rxs and not txs:
+            return rxs['rpacket'], rxs['rbyte'], 0, 0
+        elif not rxs and txs:
+            return 0, 0, txs['tpacket'], txs['tbyte']
+        else:
+            return 0, 0, 0, 0
+
+    def _count_packet(self, rtx, ip, packet, sign=None):
+        ip, num, size = packet.split()
+        if rtx.get(ip, None):
+            if sign == 'rx':
+                rtx[ip]['rpacket'] += int(num)
+                rtx[ip]['rbyte'] += int(size)
+            else:
+                rtx[ip]['tpacket'] += int(num)
+                rtx[ip]['tbyte'] += int(size)
+        else:
+            if sign == 'rx':
+                rtx[ip] = {'rpacket': int(num), 'rbyte': int(size)}
+            else:
+                rtx[ip] = {'tpacket': int(num), 'tbyte': int(size)}
 
     def run(self):
         LOG.info('PortPoller starting ...')
@@ -85,16 +117,9 @@ class PortPoller(BasePoller):
         try:
             rpacket = rbyte = tpacket = tbyte = None
             ips = self.float_ips()
-            rxs, txs = self.fetcher.fetch()
+            packets = self.fetcher.fetch()
             for ip in ips:
-                for rx in rxs:
-                    if ip.ip in rx:
-                        ip, rpacket, rbyte = rx.split()
-                        break
-                for tx in txs:
-                    if ip.ip in tx:
-                        ip, tpacket, tbyte = tx.split()
-                        break
+                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
                 q = {'uuid': ip.instance_id,
                      'ip': ip.ip,
                      'rpacket': rpacket,

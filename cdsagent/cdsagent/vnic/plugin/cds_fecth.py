@@ -36,6 +36,6 @@ class MongoFetcher(MongoBase):
         timestamp = self.get_timestamp()
         packets = self.db.log.find({'stamp': {'$gt': timestamp}})
         if not packets:
-            return None, None
+            return None
         else:
-            return packets['in'], packets['out']
+            return packets

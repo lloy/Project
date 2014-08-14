@@ -1,20 +1,44 @@
-import datatime
+from MySQLdb import Error as MySqlError
 
 from cdsagent.common.mysqldb import MysqlBase
-from cdsagent import exc
 from cdsagent.log import LOG
 from cdsagent import cfg
 
 __author__ = 'Hardy.zheng'
 
+conf = cfg.CONF
+
 
 class MysqlPusher(MysqlBase):
 
     def __init__(self):
-        super(MysqlPusher, self).__init__()
+        dbname = conf.mysql.dbname
+        super(MysqlPusher, self).__init__(dbname)
+        self.table = conf.mysql.table
+        self.cur = self.conn.cursor()
 
-    def get_timestamp(self):
-        pass
+    def clear(self):
+        try:
+            self.conn.close()
+            self.cur.close()
+        except MySqlError, e:
+            LOG.error(str(e))
 
-    def push(self):
-        pass
+    def push(self, **q):
+        try:
+            if not self.conn and not self.cur:
+                raise MySqlError('Not connect Mysql')
+            command = "insert into %s values(%s,%s,%s,%s,%s,%s,%s)" \
+                      % (self.table,
+                         q['uuid'],
+                         q['ip'],
+                         q['rpacket'],
+                         q['rbyte'],
+                         q['tpacket'],
+                         q['tbyte'],
+                         q['timestamp'])
+            self.cur.execute(command)
+            self.conn.commit()
+        except Exception, e:
+            LOG.error('MysqlPusher push error')
+            raise MySqlError(str(e))

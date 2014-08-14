@@ -12,12 +12,12 @@ conf = cfg.CONF
 
 
 class MysqlBase(base.Connection):
-    def __init__(self):
+    def __init__(self, dbname):
         try:
             self.conn = MySQLdb.connect(host=conf.mysql.host,
                                         user=conf.mysql.user,
                                         passwd=conf.mysql.passwd,
-                                        db=conf.mysql.dbname,
+                                        db=dbname,
                                         port=int(conf.mysql.port))
         except MySQLdb.Error, e:
             self.conn = None
