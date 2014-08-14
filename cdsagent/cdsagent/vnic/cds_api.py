@@ -12,12 +12,12 @@ class ApiBase(object):
         pass
 
 
-class CdsApi(ApiBase):
+class CdsClient(ApiBase):
 
     def __init__(self):
-        super(CdsApi, self).__init__()
+        super(CdsClient, self).__init__()
 
     def get_floating_ips(self):
-        LOG.error('CdsApi:get_floating_ips not implement')
-        raise NotImplementedError("Cdsapi get_floating_ips method \
+        LOG.error('CdsClient:get_floating_ips not implement')
+        raise NotImplementedError("CdsClient get_floating_ips method \
                 wasn't implement")

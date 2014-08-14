@@ -41,19 +41,20 @@ class PortPoller(BasePoller):
     def set_api(self):
         namespace = conf.float_ip.name
         name = conf.float_ip.api
-        mgr = utils.get_manager(namespace, name, load=True, args=())
+        mgr = utils.get_manager(namespace, name, load=True)
         return mgr.driver
 
     def set_fetcher(self):
         namespace = conf.fetch.name
         name = conf.fetch.src
-        mgr = utils.get_manager(namespace, name, load=True, args=())
+        LOG.info('namespace :%s - name: %s' % (namespace, name))
+        mgr = utils.get_manager(namespace, name, load=True)
         return mgr.driver
 
     def set_pusher(self):
-        namespace = conf.pusher.name
-        name = conf.pusher.dest
-        mrg = utils.get_manager(namespace, name, load=True, args=())
+        namespace = conf.push.name
+        name = conf.push.dest
+        mrg = utils.get_manager(namespace, name, load=True)
         return mrg.driver
 
     def setpoller(self):
@@ -70,7 +71,7 @@ class PortPoller(BasePoller):
             {'instance_id':dda53916-41ad-49c5-b30d-dbcd5e7fab73,
             'ip':'202.78.9.117'},...]
         """
-        return self.api.driver.get_floating_ips()
+        return self.api.get_floating_ips()
 
     def clear(self):
         self.pusher.clear()
@@ -114,22 +115,25 @@ class PortPoller(BasePoller):
     def run(self):
         LOG.info('PortPoller starting ...')
         timestamp = utils.utcnow()
+        LOG.info('PortPoller run() %s ...' % str(timestamp))
         try:
             rpacket = rbyte = tpacket = tbyte = None
-            ips = self.float_ips()
+            # ips = self.float_ips()
             packets = self.fetcher.fetch()
-            for ip in ips:
-                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
-                q = {'uuid': ip.instance_id,
-                     'ip': ip.ip,
-                     'rpacket': rpacket,
-                     'tpacket': tpacket,
-                     'rbyte': rbyte,
-                     'tbyte': tbyte,
-                     'timestamp': timestamp
-                     }
-                LOG.info('pusher data %s' % str(q))
-                self.pusher.push(q)
-            self.clear()
+            # # for ip in ips:
+                # # rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
+                # # q = {'uuid': ip.instance_id,
+                     # # 'ip': ip.ip,
+                     # # 'rpacket': rpacket,
+                     # # 'tpacket': tpacket,
+                     # # 'rbyte': rbyte,
+                     # # 'tbyte': tbyte,
+                     # # 'timestamp': timestamp
+                     # # }
+
+            q = {'test': 'Hardy.zheng'}
+            LOG.info('pusher data %s' % str(q))
+            self.pusher.push(q)
+            # self.clear()
         except Exception, e:
             LOG.error('PortPoller Error: %s' % str(e))

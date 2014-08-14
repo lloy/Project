@@ -11,7 +11,7 @@ setup(
     version=__version,
     description='cds-agent ',
     author='hardy.Zheng',
-    author_email='wei.zheng@cds.com',
+    author_email='wei.zheng@yun-idc.com',
     install_requires=[
         'oslo.messaging>=1.3.0',
         'lxml>=2.3',
@@ -21,12 +21,12 @@ setup(
     packages=find_packages('cdsagent'),
     entry_points={
         'fetch': [
-            'mongodb = cdsagent.plugin.mongodb:Connection'],
+            'mongodb = cdsagent.vnic.plugins.cds_fetch:MongoFetcher'],
         'push': [
-            'mysqldb = cdsagent.plugin.mysqldb:Connection'],
+            'mysqldb = cdsagent.vnic.plugins.cds_push:MysqlPusher'],
         'float_ip': [
-            'openstack_api = cdsagent.vnic.openstack_api:Client',
-            'cds-mysql = cdsagent.vnic.cds_api:Client'],
+            'openstack_api = cdsagent.vnic.openstack_api:NovaClient',
+            'cds-mysql = cdsagent.vnic.cds_api:CdsClient'],
         'nic': [
             'port = cdsagent.vnic.port:PortPoller'],
         'disk': [

@@ -1,0 +1,2 @@
+LOG = None
+CONF = None

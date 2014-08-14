@@ -114,7 +114,7 @@ class Launcher(object):
         :returns: None
 
         """
-        cfg.CONF.reload_config()
+        CONF.reload_config()
         self.services.restart()
 
 
@@ -137,7 +137,7 @@ class ServiceLauncher(Launcher):
         status = None
         signo = 0
 
-        LOG.debug('Full set of CONF:')
+        LOG.info('Full set of CONF:')
 
         try:
             if ready_callback:

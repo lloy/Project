@@ -82,14 +82,14 @@ class ThreadGroup(object):
             try:
                 x.stop()
             except Exception as ex:
-                LOG.exception(ex)
+                LOG.error(ex)
 
     def stop_timers(self):
         for x in self.timers:
             try:
                 x.stop()
             except Exception as ex:
-                LOG.exception(ex)
+                LOG.error(ex)
         self.timers = []
 
     def stop(self, graceful=False):
@@ -116,7 +116,7 @@ class ThreadGroup(object):
             except eventlet.greenlet.GreenletExit:
                 pass
             except Exception as ex:
-                LOG.exception(ex)
+                LOG.error(ex)
         current = threading.current_thread()
 
         # Iterate over a copy of self.threads so thread_done doesn't
@@ -129,4 +129,4 @@ class ThreadGroup(object):
             except eventlet.greenlet.GreenletExit:
                 pass
             except Exception as ex:
-                LOG.exception(ex)
+                LOG.error(ex)

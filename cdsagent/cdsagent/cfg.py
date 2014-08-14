@@ -2,20 +2,42 @@
 import ConfigParser
 import os
 
-
 from cdsagent import exc
 
-
 __author__ = 'Hardy.zheng'
+
+
+_configure_file = './cds.cfg'
 
 _DEFAULT_CONFIG = {
     'core': {
         'interval': 600},
     'database': {
         'connection': None},
+    'mysql': {
+        'host': 'localhost',
+        'user': 'admin',
+        'passwd': '12345',
+        'port': '3306',
+        'dbname': 'open_cloudoss',
+        'table': 'flow_measure'},
+    'keystone': {
+        'os_auth_url': 'http://controller:5000/v2.0',
+        'os_username': 'admin',
+        'os_tenant_name': 'admin',
+        'os_password': '12345'},
     'log': {
+        'handler': 'console, rotating',
         'path': '/var/log/cds/cds-agent.log',
-        'level': 1},
+        'max_bytes': '1*1024*1024',
+        'back_count': 5,
+        'level': '1'},
+    'float_ip': {
+        'api': 'openstack_api'},
+    'fetch': {
+        'src': 'mongodb'},
+    'push': {
+        'dest': 'mysqldb'},
     'nic': {
         'interval': 180},
     'disk': {
@@ -68,6 +90,15 @@ class PushSection(Section):
     def __init__(self):
         kw = _DEFAULT_CONFIG.get(self.name)
         super(PushSection, self).__init__(**kw)
+
+
+class MysqlSection(Section):
+
+    name = 'mysql'
+
+    def __init__(self):
+        kw = _DEFAULT_CONFIG.get(self.name)
+        super(MysqlSection, self).__init__(**kw)
 
 
 class KeyStoneSection(Section):
@@ -129,6 +160,11 @@ class Factory():
         sections = {
             'core': lambda: CoreSection(),
             'database': lambda: DatabaseSection(),
+            'mysql': lambda: MysqlSection(),
+            'keystone': lambda: KeyStoneSection(),
+            'float_ip': lambda: FloatIpSection(),
+            'fetch': lambda: FetchSection(),
+            'push': lambda: PushSection(),
             'log': lambda: LogSection(),
             'nic': lambda: NicSection(),
             'disk': lambda: DiskSection(),
@@ -152,26 +188,26 @@ class Config():
             return True
 
     def __call__(self, config_file):
-
         try:
             if not self._is_exists(config_file):
-                raise exc.NotFoundConfigureFile('Not Found config file', '0000-001-01')
+                raise exc.NotFoundConfigureFile('Not Found \
+                        config file', '0000-001-01')
             conf = ConfigParser.ConfigParser()
             conf.read(config_file)
             for k in conf.sections():
                 p = getattr(self, k, None)
+                if not p:
+                    setattr(self, k, Config.f.get_section(k))
                 options = conf.options(k)
                 for option in options:
                     p.update(option, conf.get(k, option))
         except Exception, e:
             print e
+            # LOG.error(str(e))
 
 
 def reload_config():
-    CONF(_config_file)
-
+    Config(_configure_file)
 
 CONF = Config()
-_config_file = './cds.cfg'
-
-CONF(_config_file)
+CONF(_configure_file)

@@ -11,7 +11,7 @@ LOG_LEVEL = {
     '4': logging.CRITICAL}
 
 
-class Logger():
+class Logger(object):
 
     def __init__(self, level, path, handlers, max_bytes, back_count):
         self.level = LOG_LEVEL.get(level) if level else logging.INFO
@@ -49,10 +49,11 @@ class Logger():
         return logging.getLogger(name)
 
 level = cfg.CONF.log.level
+print level
 path = cfg.CONF.log.path
 log_handlers = [h.strip() for h in cfg.CONF.log.handler.split(DEAFAULT_SIGN)]
 max_bytes = cfg.CONF.log.max_bytes
 count = cfg.CONF.log.back_count
 
 logger = Logger(level, path, log_handlers, max_bytes, count)
-LOG = logger.setup('')
+LOG = logger.setup('cds-agent')
