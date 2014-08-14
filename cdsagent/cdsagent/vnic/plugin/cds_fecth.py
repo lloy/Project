@@ -10,16 +10,16 @@ class MongoFetcher(MongoBase):
 
     def __init__(self, url):
         super(MongoFetcher, self).__init__(url)
-        self.locker_sgin = 'Y'
+        self.locker_sign = 'Y'
 
     def set_lock(self):
         # get lock from table of processing
         locker = self.processing.find_one()
         lock = locker['processing']
-        if lock == self.locker_sgin:
+        if lock == self.locker_sign:
             return False
         else:
-            q = {'_id': locker['_id'], 'processing': 'Y'}
+            q = {'_id': locker['_id'], 'processing': self.locker_sign}
             self.processing.save(q)
             return True
 
