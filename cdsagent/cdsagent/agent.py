@@ -1,8 +1,8 @@
-from stevedore import driver
 from cdsagent.log import LOG
 from cdsagent import cfg
 from cdsagent import exc
 from cdsagent import service as os_service
+from cdsagent import utils
 
 __author__ = 'Hardy.zheng'
 
@@ -15,14 +15,6 @@ class AgentManager(os_service.Service):
     def __init__(self):
         super(AgentManager, self).__init__()
 
-    def get_manager(slef, namespace, name, load=True, args=()):
-        LOG.info('namespace: %s -->  name: %s' % (namespace, name))
-        return driver.DriverManager(
-            namespace=namespace,
-            name=name,
-            invoke_on_load=True,
-            invoke_args=())
-
     def start(self):
         for task in _TASKS:
             worker = getattr(cfg.CONF, task, None)
@@ -32,7 +24,7 @@ class AgentManager(os_service.Service):
                 raise exc.NotSetPoller('not set poller in \
                     section %s configure file' % task, '0000-001-02')
             poller = worker.poller
-            mgr = self.get_manager(task, poller, False)
+            mgr = utils.get_manager(task, poller, False)
 
             if not hasattr(mgr.driver, 'run'):
                 raise exc.NotRunMethod('Not Found run() \

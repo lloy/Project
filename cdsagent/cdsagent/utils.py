@@ -1,5 +1,6 @@
 import os
 import datetime
+from stevedore import driver
 from six.moves.urllib import parse
 
 __author__ = 'Hardy.zheng'
@@ -41,3 +42,11 @@ def total_seconds(delta):
     except AttributeError:
         return ((delta.days * 24 * 3600) + delta.seconds +
                 float(delta.microseconds) / (10 ** 6))
+
+
+def get_manager(namespace, name, load=True, args=()):
+        return driver.DriverManager(
+            namespace=namespace,
+            name=name,
+            invoke_on_load=load,
+            invoke_args=args)

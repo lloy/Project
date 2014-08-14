@@ -52,6 +52,42 @@ class DatabaseSection(Section):
         super(DatabaseSection, self).__init__(**kw)
 
 
+class FetchSection(Section):
+
+    name = 'fetch'
+
+    def __init__(self):
+        kw = _DEFAULT_CONFIG.get(self.name)
+        super(FetchSection, self).__init__(**kw)
+
+
+class PushSection(Section):
+
+    name = 'push'
+
+    def __init__(self):
+        kw = _DEFAULT_CONFIG.get(self.name)
+        super(PushSection, self).__init__(**kw)
+
+
+class KeyStoneSection(Section):
+
+    name = 'keystone'
+
+    def __init__(self):
+        kw = _DEFAULT_CONFIG.get(self.name)
+        super(KeyStoneSection, self).__init__(**kw)
+
+
+class FloatIpSection(Section):
+
+    name = 'float_ip'
+
+    def __init__(self):
+        kw = _DEFAULT_CONFIG.get(self.name)
+        super(FloatIpSection, self).__init__(**kw)
+
+
 class LogSection(Section):
 
     name = 'log'

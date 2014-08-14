@@ -20,13 +20,13 @@ setup(
         'anyjson>=0.3.3'],
     packages=find_packages('cdsagent'),
     entry_points={
-        'in_pulgin': [
+        'fetch': [
             'mongodb = cdsagent.plugin.mongodb:Connection'],
-        'outpulgin': [
+        'push': [
             'mysqldb = cdsagent.plugin.mysqldb:Connection'],
         'float_ip': [
-            'openstack_api = cdsagent.vnic.novaapi:Client',
-            'cds-mysql = cdsagent.vnic.cdsapi:Client'],
+            'openstack_api = cdsagent.vnic.openstack_api:Client',
+            'cds-mysql = cdsagent.vnic.cds_api:Client'],
         'nic': [
             'port = cdsagent.vnic.port:PortPoller'],
         'disk': [

@@ -66,3 +66,9 @@ class BadVersion(AgentException):
 
 class BadAggregate(AgentException):
     pass
+
+
+class IsLock(AgentException):
+    def __init__(self, message):
+        errno = '0000-006-01'
+        super(IsLock, self).__init__(message, errno)

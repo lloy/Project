@@ -1,8 +1,11 @@
 import pymongo
 import weakref
-from cdsagent.storage import base
+import time
+from cdsagent.common import base
 from cdsagent import utils
 from cdsagent import exc
+from cdsagent.log import LOG
+
 
 __author__ = 'Hardy.zheng'
 
@@ -30,7 +33,7 @@ class ConnectionPool(object):
         scheme = utils.urlsplit(url)
         log_data = {'db': scheme,
                     'nodelist': connection_options['nodelist']}
-        LOG.info(_('Connecting to %(db)s on %(nodelist)s') % log_data)
+        LOG.info('Connecting to %(db)s on %(nodelist)s' % log_data)
         client = self._mongo_connect(url)
         self._pool[pool_key] = weakref.ref(client)
         return client
@@ -45,13 +48,13 @@ class ConnectionPool(object):
                 client = pymongo.MongoClient(url, safe=True)
             except pymongo.errors.ConnectionFailure as e:
                 if max_retries >= 0 and attempts >= max_retries:
-                    LOG.error(_('Unable to connect to the database after '
-                                '%(retries)d retries. Giving up.') %
+                    LOG.error('Unable to connect to the database after '
+                              '%(retries)d retries. Giving up.' %
                               {'retries': max_retries})
                     raise
-                LOG.warn(_('Unable to connect to the database server: '
-                           '%(errmsg)s. Trying again in %(retry_interval)d '
-                           'seconds.') %
+                LOG.warn('Unable to connect to the database server: '
+                         '%(errmsg)s. Trying again in %(retry_interval)d '
+                         'seconds.' %
                          {'errmsg': e, 'retry_interval': retry_interval})
                 attempts += 1
                 time.sleep(retry_interval)
@@ -59,7 +62,7 @@ class ConnectionPool(object):
                 return client
 
 
-class Connection(base.Connection):
+class MongoBase(base.Connection):
 
     def __init__(self, url):
 
@@ -80,10 +83,5 @@ class Connection(base.Connection):
         # Connection will be reopened automatically if needed
         self.conn.close()
 
-
-    def get_rx_resources(self, ip):
-        pass
-
-    def get_tx_resources(self, ip):
-        pass
-
+    def collections(self):
+        self.db.collection_names()

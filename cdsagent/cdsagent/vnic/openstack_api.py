@@ -31,9 +31,12 @@ class NovaClient(OpenstackClientBase):
 
     def get_floating_ips(self):
         try:
-            ips = {}
+            ips = []
             for ip in self.nova.floating_ips.list(self.search_opts):
-                ips[ip.ip] = ip.instance_id
+                d = {}
+                d['instance_id'] = ip.instance_id
+                d['ip'] = ip.ip
+                ips.append(d)
             return ips
         except Exception, e:
             LOG.error(str(e))
