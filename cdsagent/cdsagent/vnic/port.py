@@ -120,22 +120,22 @@ class PortPoller(BasePoller):
         LOG.info('PortPoller run() %s ...' % str(timestamp))
         try:
             rpacket = rbyte = tpacket = tbyte = None
-            # ips = self.float_ips()
+            ips = self.float_ips()
             packets = self.fetcher.fetch()
-            # # for ip in ips:
-                # # rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
-                # # q = {'uuid': ip.instance_id,
-                     # # 'ip': ip.ip,
-                     # # 'rpacket': rpacket,
-                     # # 'tpacket': tpacket,
-                     # # 'rbyte': rbyte,
-                     # # 'tbyte': tbyte,
-                     # # 'timestamp': timestamp
-                     # # }
+            for ip in ips:
+                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
+                q = {'uuid': ip.instance_id,
+                     'ip': ip.ip,
+                     'rpacket': rpacket,
+                     'tpacket': tpacket,
+                     'rbyte': rbyte,
+                     'tbyte': tbyte,
+                     'timestamp': timestamp
+                     }
 
             q = {'test': 'Hardy.zheng'}
             LOG.info('pusher data %s' % str(q))
             self.pusher.push(q)
-            # self.clear()
+            self.clear()
         except Exception, e:
             LOG.error('PortPoller Error: %s' % str(e))

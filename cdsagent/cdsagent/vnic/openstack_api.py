@@ -25,33 +25,25 @@ class OpenstackClientBase(object):
         self.keystone.update(service_type=service_type)
 
 
-class NovaClient(object):
+class NovaClient(OpenstackClientBase):
 
     def __init__(self):
-        LOG.info('NovaClient call')
+        super(NovaClient, self).__init__()
+        self.set_service_type('compute')
+        self.client = nova_client.Client(**self.keystone)
 
     def get_floating_ips(self):
-        LOG.info('NovaClient.get_floating_ips() call')
-
-# class NovaClient(OpenstackClientBase):
-
-    # def __init__(self):
-        # super(NovaClient, self).__init__()
-        # self.set_service_type('compute')
-        # self.client = nova_client.Client(**self.keystone)
-
-    # def get_floating_ips(self):
-        # try:
-            # ips = []
-            # for ip in self.nova.floating_ips.list(self.search_opts):
-                # d = {}
-                # d['instance_id'] = ip.instance_id
-                # d['ip'] = ip.ip
-                # ips.append(d)
-            # return ips
-        # except Exception, e:
-            # LOG.error(str(e))
-            # raise exc.RunNovaClientError('nova client not process')
+        try:
+            ips = []
+            for ip in self.nova.floating_ips.list(self.search_opts):
+                d = {}
+                d['instance_id'] = ip.instance_id
+                d['ip'] = ip.ip
+                ips.append(d)
+            return ips
+        except Exception, e:
+            LOG.error(str(e))
+            raise exc.RunNovaClientError('nova client not process')
 
 
 class CeilometerClient(OpenstackClientBase):
