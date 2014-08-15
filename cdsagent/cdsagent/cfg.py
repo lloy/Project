@@ -7,7 +7,8 @@ from cdsagent import exc
 __author__ = 'Hardy.zheng'
 
 
-_configure_file = './cds.cfg'
+# _configure_file = './cds.cfg'
+_configure_file = '/etc/cds/cds.cfg'
 
 _DEFAULT_CONFIG = {
     'core': {
@@ -202,12 +203,11 @@ class Config():
                 for option in options:
                     p.update(option, conf.get(k, option))
         except Exception, e:
-            print e
-            # LOG.error(str(e))
+            raise exc.ConfigureException(str(e))
 
 
 def reload_config():
     Config(_configure_file)
 
 CONF = Config()
-CONF(_configure_file)
+# CONF(_configure_file)

@@ -1,11 +1,14 @@
 
 import threading
+import logging
 
 import eventlet
 from eventlet import greenpool
 
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
 from cdsagent import loopingcall
+
+LOG = logging.getLogger(__name__)
 
 
 def _thread_done(gt, *args, **kwargs):

@@ -1,14 +1,16 @@
 
 import MySQLdb
+import logging
 
 from cdsagent.common import base
 from cdsagent import cfg
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
 
 
 __author__ = 'Hardy.zheng'
 
 conf = cfg.CONF
+LOG = logging.getLogger(__name__)
 
 
 class MysqlBase(base.Connection):

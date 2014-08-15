@@ -4,8 +4,11 @@ import errno
 import os
 import signal
 import sys
+import logging
 
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
+
+LOG = logging.getLogger(__name__)
 
 try:
     # Importing just the symbol here because the io module does not

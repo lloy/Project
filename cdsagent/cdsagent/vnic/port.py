@@ -1,11 +1,13 @@
-
+import logging
 from cdsagent import cfg
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
 from cdsagent import utils
 
 __author__ = 'Hardy.zheng'
 __email__ = 'wei.zheng@yun-idc.com'
 
+
+LOG = logging.getLogger(__name__)
 conf = cfg.CONF
 
 

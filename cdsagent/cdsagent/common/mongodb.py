@@ -1,16 +1,18 @@
 import pymongo
 import weakref
 import time
+import logging
 from cdsagent.common import base
 from cdsagent import utils
 from cdsagent import exc
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
 
 
 __author__ = 'Hardy.zheng'
 
 _RETRY_INTERVAL = 30
 _MAX_RETRIES = 3
+LOG = logging.getLogger(__name__)
 
 
 class ConnectionPool(object):

@@ -1,4 +1,8 @@
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
+import logging
+
+
+LOG = logging.getLogger(__name__)
 
 __author__ = 'Hardy.zheng'
 

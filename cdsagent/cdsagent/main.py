@@ -1,4 +1,6 @@
-from cdsagent.log import LOG
+# from cdsagent.log import LOG
+import logging
+
 from cdsagent import cfg
 from cdsagent import exc
 from cdsagent import service as os_service
@@ -7,6 +9,7 @@ from cdsagent import utils
 __author__ = 'Hardy.zheng'
 
 
+LOG = logging.getLogger(__name__)
 _TASKS = ['nic', 'disk', ]
 
 
@@ -18,7 +21,6 @@ class AgentManager(os_service.Service):
     def start(self):
         LOG.info('start cdsagent....')
         for task in _TASKS:
-            print cfg.CONF.log.level
             worker = getattr(cfg.CONF, task, None)
             if not worker:
                 continue
