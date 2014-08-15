@@ -2,6 +2,7 @@ import logging
 
 from cdsagent import cfg
 from cdsagent import utils
+from cdsagent import exc
 
 __author__ = 'Hardy.zheng'
 __email__ = 'wei.zheng@yun-idc.com'
@@ -34,11 +35,14 @@ class BasePoller(object):
 class PortPoller(BasePoller):
 
     def __init__(self):
-        super(PortPoller, self).__init__()
-        self.sections = ['float_ip', 'fetcher', 'pusher']
-        self.rx = 'in'
-        self.tx = 'out'
-        self.setpoller()
+        try:
+            super(PortPoller, self).__init__()
+            self.sections = ['float_ip', 'fetcher', 'pusher']
+            self.rx = 'in'
+            self.tx = 'out'
+            self.setpoller()
+        except Exception:
+            raise
 
     def set_api(self):
         namespace = conf.float_ip.name
@@ -49,8 +53,8 @@ class PortPoller(BasePoller):
     def set_fetcher(self):
         namespace = conf.fetch.name
         name = conf.fetch.src
-        LOG.info('namespace :%s - name: %s' % (namespace, name))
-        mgr = utils.get_manager(namespace, name, load=True)
+        url = cfg.CONF.database.connection
+        mgr = utils.get_manager(namespace, name, load=True, args=(url,))
         return mgr.driver
 
     def set_pusher(self):
@@ -60,9 +64,13 @@ class PortPoller(BasePoller):
         return mrg.driver
 
     def setpoller(self):
-        self.api = self.set_api()
-        self.fetcher = self.set_fetcher()
-        self.pusher = self.set_pusher()
+        try:
+            self.api = self.set_api()
+            self.fetcher = self.set_fetcher()
+            self.pusher = self.set_pusher()
+        except Exception, e:
+            LOG.error(str(e))
+            raise exc.SetPollerError('set Poller error')
 
     def float_ips(self):
         """

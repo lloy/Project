@@ -14,8 +14,7 @@ class Logger(object):
 
     def __init__(self, name, level, path, handlers, max_bytes, back_count):
         self.level = LOG_LEVEL.get(level) if level else logging.INFO
-        self.formatter = '%(asctime)s %(filename)s[line:%(lineno)d] \
-                %(levelname)s %(message)s'
+        self.formatter = '%(asctime)s %(process)d %(name)s:%(lineno)d[%(levelname)s]:\t%(message)s'
         self.datefmt = '%a, %d %b %Y %H:%M:%S'
         self.filename = path
         self.filemode = 'a'
@@ -36,7 +35,7 @@ class Logger(object):
                 console.setLevel(self.level)
                 formatter = logging.Formatter(self.formatter)
                 console.setFormatter(formatter)
-                logging.getLogger('').addHandler(console)
+                self.logging.addHandler(console)
             if h == 'rotating':
                 rotating = loghandlers.RotatingFileHandler(
                         self.filename,
@@ -45,7 +44,7 @@ class Logger(object):
                 rotating.setLevel(self.level)
                 formatter = logging.Formatter(self.formatter)
                 rotating.setFormatter(formatter)
-                logging.getLogger('').addHandler(rotating)
+                self.logger.addHandler(rotating)
 
     def setup(self):
         self.set_handler()

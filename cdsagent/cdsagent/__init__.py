@@ -1,2 +1,0 @@
-LOG = None
-CONF = None

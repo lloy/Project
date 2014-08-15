@@ -39,8 +39,7 @@ def set_configure(filename):
         raise e
 
 
-if __name__ == '__main__':
-
+def main():
     (options, args) = parser.parse_args()
     if not options.filename:
         parser.error("not input config file, --config filename")
@@ -48,3 +47,6 @@ if __name__ == '__main__':
     set_configure(options.filename)
     set_log('cds-agent')
     run()
+
+if __name__ == '__main__':
+    main()

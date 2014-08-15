@@ -2,15 +2,15 @@ import pymongo
 import weakref
 import time
 import logging
-from cdsagent.common import base
+
 from cdsagent import utils
 from cdsagent import exc
 
 
 __author__ = 'Hardy.zheng'
 
-_RETRY_INTERVAL = 30
-_MAX_RETRIES = 3
+_RETRY_INTERVAL = 10
+_MAX_RETRIES = 2
 LOG = logging.getLogger(__name__)
 
 
@@ -53,17 +53,19 @@ class ConnectionPool(object):
                               '%(retries)d retries. Giving up.' %
                               {'retries': max_retries})
                     raise
-                LOG.warn('Unable to connect to the database server: '
-                         '%(errmsg)s. Trying again in %(retry_interval)d '
-                         'seconds.' %
-                         {'errmsg': e, 'retry_interval': retry_interval})
+                LOG.warning('Unable to connect to the database server: '
+                            '%(errmsg)s. Trying again in %(retry_interval)d '
+                            'seconds.' %
+                            {'errmsg': e, 'retry_interval': retry_interval})
                 attempts += 1
                 time.sleep(retry_interval)
             else:
                 return client
 
 
-class MongoBase(base.Connection):
+class MongoBase(object):
+
+    CONNECTION_POOL = ConnectionPool()
 
     def __init__(self, url):
 

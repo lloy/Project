@@ -27,7 +27,10 @@ class AgentManager(os_service.Service):
                 raise exc.NotSetPoller('not set poller in \
                     section configure file')
             poller = worker.poller
-            mgr = utils.get_manager(task, poller, False)
+            try:
+                mgr = utils.get_manager(task, poller, False)
+            except Exception, e:
+                LOG.error('set %s Failed -->%s' % (task, str(e)))
 
             if not hasattr(mgr.driver, 'run'):
                 raise exc.NotRunMethod('Not Found run() \

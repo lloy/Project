@@ -30,7 +30,10 @@ setup(
         'nic': [
             'port = cdsagent.vnic.port:PortPoller'],
         'disk': [
-            'openstack = cdsagent.vdisk.disk:DiskPoller']},
+            'openstack = cdsagent.vdisk.disk:DiskPoller'],
+        'console_scripts': [
+            'cds-agent = cdsagent.cds_agent:main']},
     package_dir={'': 'cdsagent'},
     include_package_data=True,
-    namespace_packages=['cdsagent'])
+    # namespace_packages=['cdsagent']
+    )

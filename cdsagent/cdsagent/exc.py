@@ -37,6 +37,10 @@ class NotSetPoller(ConfigureException):
     pass
 
 
+class SetPollerError(Exception):
+    pass
+
+
 class NotRunMethod(AgentException):
     """
     errno = 0000-003-01
@@ -64,7 +68,7 @@ class BadVersion(AgentException):
     pass
 
 
-class BadAggregate(AgentException):
+class BadAggregate(Exception):
     pass
 
 

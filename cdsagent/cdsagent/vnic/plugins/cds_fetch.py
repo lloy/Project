@@ -34,6 +34,7 @@ class MongoFetcher(MongoBase):
         return stamp['last_process']
 
     def fetch(self):
+        LOG.info('MongoFetcher fetch')
         # to get last timestamp from table stamp where live in newlog datebase
         if not self.set_lock():
             raise exc.IsLock('already lock')
