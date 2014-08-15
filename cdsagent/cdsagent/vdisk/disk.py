@@ -1,4 +1,3 @@
-# from cdsagent.log import LOG
 import logging
 
 

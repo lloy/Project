@@ -5,7 +5,6 @@ import logging
 import eventlet
 from eventlet import greenpool
 
-# from cdsagent.log import LOG
 from cdsagent import loopingcall
 
 LOG = logging.getLogger(__name__)

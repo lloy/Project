@@ -1,6 +1,5 @@
 import logging
 from logging import handlers as loghandlers
-# from cdsagent import cfg
 
 DEAFAULT_SIGN = ','
 LOG_LEVEL = {

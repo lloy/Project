@@ -3,9 +3,9 @@ import logging
 
 # from cdsagent.common.mongodb import MongoBase
 from cdsagent import exc
-# from cdsagent.log import LOG
 
 __author__ = 'Hardy.zheng'
+
 
 LOG = logging.getLogger(__name__)
 

@@ -5,7 +5,6 @@ import logging
 from cdsagent.common import base
 from cdsagent import utils
 from cdsagent import exc
-# from cdsagent.log import LOG
 
 
 __author__ = 'Hardy.zheng'

@@ -2,7 +2,6 @@ import logging
 from MySQLdb import Error as MySqlError
 
 from cdsagent.common.mysqldb import MysqlBase
-# from cdsagent.log import LOG
 from cdsagent import cfg
 
 __author__ = 'Hardy.zheng'

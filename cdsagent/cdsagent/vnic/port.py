@@ -1,6 +1,6 @@
 import logging
+
 from cdsagent import cfg
-# from cdsagent.log import LOG
 from cdsagent import utils
 
 __author__ = 'Hardy.zheng'

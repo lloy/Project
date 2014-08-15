@@ -6,7 +6,6 @@ import signal
 import sys
 import logging
 
-# from cdsagent.log import LOG
 
 LOG = logging.getLogger(__name__)
 

@@ -21,8 +21,8 @@ import logging
 from eventlet import event
 from eventlet import greenthread
 
-# from cdsagent.log import LOG
 from cdsagent import utils
+
 
 LOG = logging.getLogger(__name__)
 

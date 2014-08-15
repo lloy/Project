@@ -210,4 +210,3 @@ def reload_config():
     Config(_configure_file)
 
 CONF = Config()
-# CONF(_configure_file)

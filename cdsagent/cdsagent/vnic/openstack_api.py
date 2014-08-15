@@ -1,12 +1,13 @@
 import logging
-# from cdsagent.log import LOG
+
 from novaclient.v1_1 import client as nova_client
 from cdsagent import cfg
 from cdsagent import exc
 
 
-LOG = logging.getLogger(__name__)
 __author__ = 'Hardy.zheng'
+
+LOG = logging.getLogger(__name__)
 conf = cfg.CONF
 
 
