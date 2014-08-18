@@ -191,8 +191,7 @@ class Config():
     def __call__(self, config_file):
         try:
             if not self._is_exists(config_file):
-                raise exc.NotFoundConfigureFile('Not Found \
-                        config file', '0000-001-01')
+                raise exc.NotFoundConfigureFile('Not Found config file')
             conf = ConfigParser.ConfigParser()
             conf.read(config_file)
             for k in conf.sections():
@@ -203,7 +202,7 @@ class Config():
                 for option in options:
                     p.update(option, conf.get(k, option))
         except Exception, e:
-            raise exc.ConfigureException(str(e))
+            raise exc.ConfigureException(e.msg)
 
 
 def reload_config():

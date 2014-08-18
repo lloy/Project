@@ -36,7 +36,7 @@ def set_configure(filename):
         cfg._configure_file = filename
         cfg.CONF(filename)
     except exc.ConfigureException, e:
-        raise e
+        raise exc.ConfigureException(e.msg)
 
 
 def main():

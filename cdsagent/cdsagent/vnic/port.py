@@ -40,7 +40,6 @@ class PortPoller(BasePoller):
             self.sections = ['float_ip', 'fetcher', 'pusher']
             self.rx = 'in'
             self.tx = 'out'
-            self.setpoller()
         except Exception:
             raise
 
@@ -127,6 +126,7 @@ class PortPoller(BasePoller):
         timestamp = utils.utcnow()
         LOG.info('PortPoller run() %s ...' % str(timestamp))
         try:
+            self.setpoller()
             rpacket = rbyte = tpacket = tbyte = None
             ips = self.float_ips()
             packets = self.fetcher.fetch()

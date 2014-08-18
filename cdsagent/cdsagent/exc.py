@@ -4,9 +4,7 @@ __author__ = 'Hardy.zheng'
 
 class AgentException(Exception):
 
-    errno = '0000-000-00'
-
-    def __init__(self, message, errno):
+    def __init__(self, message, errno='0000-000-00'):
         self.msg = message
         self.code = errno
         super(AgentException, self).__init__(self.msg, self.code)
@@ -25,8 +23,7 @@ class ConfigureException(AgentException):
     errno = 0000-001-00
     """
 
-    def __init__(self, message):
-        errno = '0000-001-00'
+    def __init__(self, message, errno='0000-001-00'):
         super(ConfigureException, self).__init__(message, errno)
 
 
@@ -52,7 +49,9 @@ class NotFoundConfigureFile(ConfigureException):
     """
     errno = 0000-001-01
     """
-    pass
+    def __init__(self, message):
+        errno = '0000-001-01'
+        super(ConfigureException, self).__init__(message, errno)
 
 
 class MultipleResultsFound(AgentException):
