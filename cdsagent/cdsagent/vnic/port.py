@@ -46,8 +46,11 @@ class PortPoller(BasePoller):
     def set_api(self):
         namespace = conf.float_ip.name
         name = conf.float_ip.api
-        mgr = utils.get_manager(namespace, name, load=True)
-        return mgr.driver
+        try:
+            mgr = utils.get_manager(namespace, name, load=True)
+            return mgr.driver
+        except exc.NovaClientInitError, e:
+            raise e
 
     def set_fetcher(self):
         namespace = conf.fetch.name
@@ -65,11 +68,11 @@ class PortPoller(BasePoller):
     def setpoller(self):
         try:
             self.api = self.set_api()
-            self.fetcher = self.set_fetcher()
-            self.pusher = self.set_pusher()
+            # self.fetcher = self.set_fetcher()
+            # self.pusher = self.set_pusher()
         except Exception, e:
             LOG.error(str(e))
-            raise exc.SetPollerError('set Poller error')
+            raise exc.SetPollerError('Set Poller Error')
 
     def float_ips(self):
         """
@@ -129,6 +132,7 @@ class PortPoller(BasePoller):
             self.setpoller()
             rpacket = rbyte = tpacket = tbyte = None
             ips = self.float_ips()
+            LOG.debug('Openstack floatting ips %s' % str(ips))
             packets = self.fetcher.fetch()
             for ip in ips:
                 rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)

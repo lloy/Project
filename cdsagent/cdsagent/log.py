@@ -3,8 +3,8 @@ from logging import handlers as loghandlers
 
 DEAFAULT_SIGN = ','
 LOG_LEVEL = {
-    '0': logging.INFO,
-    '1': logging.DEBUG,
+    '0': logging.DEBUG,
+    '1': logging.INFO,
     '2': logging.WARNING,
     '3': logging.ERROR,
     '4': logging.CRITICAL}

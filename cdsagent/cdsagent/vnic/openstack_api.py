@@ -30,7 +30,11 @@ class NovaClient(OpenstackClientBase):
     def __init__(self):
         super(NovaClient, self).__init__()
         self.set_service_type('compute')
-        self.client = nova_client.Client(**self.keystone)
+        try:
+            self.nova = nova_client.Client(**self.keystone)
+        except Exception, e:
+            LOG.error(str(e))
+            raise exc.NovaClientInitError('NovaClient Init Error')
 
     def get_floating_ips(self):
         try:
@@ -43,7 +47,7 @@ class NovaClient(OpenstackClientBase):
             return ips
         except Exception, e:
             LOG.error(str(e))
-            raise exc.RunNovaClientError('nova client not process')
+            raise exc.RunNovaClientError('get floating ip across NovaClient Error')
 
 
 class CeilometerClient(OpenstackClientBase):

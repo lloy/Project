@@ -2,6 +2,10 @@
 __author__ = 'Hardy.zheng'
 
 
+class NovaClientInitError(Exception):
+    pass
+
+
 class AgentException(Exception):
 
     def __init__(self, message, errno='0000-000-00'):
