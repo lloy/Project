@@ -136,13 +136,13 @@ class PortPoller(BasePoller):
             packets = self.fetcher.fetch()
             for ip in ips:
                 rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
-                q = {'uuid': ip.instance_id,
+                q = {'instance_uuid': ip.instance_id,
                      'ip': ip.ip,
-                     'rpacket': rpacket,
-                     'tpacket': tpacket,
-                     'rbyte': rbyte,
-                     'tbyte': tbyte,
-                     'timestamp': timestamp
+                     'rpackets': rpacket,
+                     'tpackets': tpacket,
+                     'rbytes': rbyte,
+                     'tbytes': tbyte,
+                     'insert_timestamp': timestamp
                      }
 
             q = {'test': 'Hardy.zheng'}

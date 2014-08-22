@@ -31,13 +31,13 @@ class MysqlPusher(MysqlBase):
                 raise MySqlError('Not connect Mysql')
             command = "insert into %s values(%s,%s,%s,%s,%s,%s,%s)" \
                       % (self.table,
-                         q['uuid'],
+                         q['instance_uuid'],
                          q['ip'],
-                         q['rpacket'],
-                         q['rbyte'],
-                         q['tpacket'],
-                         q['tbyte'],
-                         q['timestamp'])
+                         q['rpackets'],
+                         q['rbytes'],
+                         q['tpackets'],
+                         q['tbytes'],
+                         q['insert_timestamp'])
             self.cur.execute(command)
             self.conn.commit()
         except Exception, e:
