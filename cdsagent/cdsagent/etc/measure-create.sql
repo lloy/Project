@@ -12,5 +12,5 @@ create table flow_measure(
     tpackets INT UNSIGNED NOT NULL,
     tbytes INT UNSIGNED NOT NULL,
     inster_timestamp DATETIME NOT NULL,
-	PRIMARY KEY (instance_uuid, ip, rpackets, rbytes, tpackets, tbytes, insert_timestamp)
+	PRIMARY KEY (instance_uuid)
 );
