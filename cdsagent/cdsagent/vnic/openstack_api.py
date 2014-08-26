@@ -41,6 +41,8 @@ class NovaClient(OpenstackClientBase):
             ips = []
             for ip in self.nova.floating_ips.list(self.search_opts):
                 d = {}
+                if not ip.instance_id:
+                    continue
                 d['instance_id'] = ip.instance_id
                 d['ip'] = ip.ip
                 ips.append(d)

@@ -4,7 +4,7 @@ import time
 import logging
 
 from cdsagent import utils
-from cdsagent import exc
+# from cdsagent import exc
 
 
 __author__ = 'Hardy.zheng'
@@ -46,7 +46,7 @@ class ConnectionPool(object):
         attempts = 0
         while True:
             try:
-                client = pymongo.MongoClient(url, safe=True)
+                client = pymongo.MongoClient(url)
             except pymongo.errors.ConnectionFailure as e:
                 if max_retries >= 0 and attempts >= max_retries:
                     LOG.error('Unable to connect to the database after '
@@ -70,11 +70,6 @@ class MongoBase(object):
     def __init__(self, url):
 
         self.conn = self.CONNECTION_POOL.connect(url)
-
-        # Require MongoDB 2.4 to use $setOnInsert
-        if self.conn.server_info()['versionArray'] < [2, 4]:
-            raise exc.BadVersion("Need at least MongoDB 2.4")
-
         connection_options = pymongo.uri_parser.parse_uri(url)
         self.db = getattr(self.conn, connection_options['database'])
         if connection_options.get('username'):

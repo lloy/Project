@@ -1,4 +1,5 @@
 import logging
+import copy
 
 from cdsagent import cfg
 from cdsagent import utils
@@ -50,26 +51,35 @@ class PortPoller(BasePoller):
             mgr = utils.get_manager(namespace, name, load=True)
             return mgr.driver
         except exc.NovaClientInitError, e:
+            LOG.error('set api failed')
             raise e
 
     def set_fetcher(self):
         namespace = conf.fetch.name
         name = conf.fetch.src
         url = cfg.CONF.database.connection
-        mgr = utils.get_manager(namespace, name, load=True, args=(url,))
-        return mgr.driver
+        try:
+            mgr = utils.get_manager(namespace, name, load=True, args=(url,))
+            return mgr.driver
+        except Exception, e:
+            LOG.error('set fetcher failed')
+            raise e
 
     def set_pusher(self):
         namespace = conf.push.name
         name = conf.push.dest
-        mrg = utils.get_manager(namespace, name, load=True)
-        return mrg.driver
+        try:
+            mrg = utils.get_manager(namespace, name, load=True)
+            return mrg.driver
+        except Exception, e:
+            LOG.error('set pusher failed')
+            raise e
 
     def setpoller(self):
         try:
             self.api = self.set_api()
-            # self.fetcher = self.set_fetcher()
-            # self.pusher = self.set_pusher()
+            self.fetcher = self.set_fetcher()
+            self.pusher = self.set_pusher()
         except Exception, e:
             LOG.error(str(e))
             raise exc.SetPollerError('Set Poller Error')
@@ -89,15 +99,25 @@ class PortPoller(BasePoller):
         self.pusher.clear()
 
     def get_packet(self, ip, packets_set):
+        LOG.debug('get_packet call')
+        LOG.debug('ip: %s' % ip)
         rxs = {}
         txs = {}
         for count in packets_set:
-            for inpacket in count[self.rx].split('\n'):
+            LOG.debug('count : %s' % str(count))
+            in_traffic = count.get(self.rx, None)
+            if not in_traffic:
+                continue
+            LOG.debug('in_traffic : %s' % in_traffic)
+            for inpacket in in_traffic.split('\n'):
+                LOG.debug('inpacket: %s' % inpacket)
                 if ip in inpacket:
+                    LOG.debug('inpacket ipxxx : %s' % ip)
                     self._count_packet(rxs, ip, inpacket, sign='rx')
                     break
             for outpacket in count[self.tx].split('\n'):
                 if ip in outpacket:
+                    LOG.debug('outpacket ipxxx : %s' % ip)
                     self._count_packet(txs, ip, outpacket, sign='tx')
                     break
         if rxs and txs:
@@ -111,6 +131,7 @@ class PortPoller(BasePoller):
 
     def _count_packet(self, rtx, ip, packet, sign=None):
         ip, num, size = packet.split()
+        LOG.debug('ip %s num %d size %d' % (ip, int(num), int(size)))
         if rtx.get(ip, None):
             if sign == 'rx':
                 rtx[ip]['rpacket'] += int(num)
@@ -134,20 +155,22 @@ class PortPoller(BasePoller):
             ips = self.float_ips()
             LOG.debug('Openstack floatting ips %s' % str(ips))
             packets = self.fetcher.fetch()
+            if not packets:
+                LOG.warning('not fetch net traffic')
+                return
             for ip in ips:
-                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip, packets)
-                q = {'instance_uuid': ip.instance_id,
-                     'ip': ip.ip,
+                packets_copies = copy.copy(packets)
+                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip['ip'], packets_copies)
+                q = {'instance_uuid': ip['instance_id'],
+                     'ip': ip['ip'],
                      'rpackets': rpacket,
                      'tpackets': tpacket,
                      'rbytes': rbyte,
                      'tbytes': tbyte,
                      'insert_timestamp': timestamp
                      }
-
-            q = {'test': 'Hardy.zheng'}
-            LOG.info('pusher data %s' % str(q))
-            self.pusher.push(q)
-            self.clear()
+                LOG.info('pusher data %s' % str(q))
+                self.pusher.push(**q)
+                # self.clear()
         except Exception, e:
             LOG.error('PortPoller Error: %s' % str(e))

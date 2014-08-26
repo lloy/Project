@@ -29,15 +29,24 @@ class MysqlPusher(MysqlBase):
         try:
             if not self.conn and not self.cur:
                 raise MySqlError('Not connect Mysql')
-            command = "insert into %s values(%s,%s,%s,%s,%s,%s,%s)" \
+            command = "insert into %s (instance_uuid,\
+                                       ip,\
+                                       rpackets,\
+                                       rbytes,\
+                                       tpackets,\
+                                       tbytes,\
+                                       inster_timestamp)\
+                                    values('%s','%s',%s,%s,%s,%s,'%s')" \
                       % (self.table,
-                         q['instance_uuid'],
-                         q['ip'],
+                         str(q['instance_uuid']),
+                         str(q['ip']),
                          q['rpackets'],
                          q['rbytes'],
                          q['tpackets'],
                          q['tbytes'],
                          q['insert_timestamp'])
+
+            LOG.debug('insert command %s' % command)
             self.cur.execute(command)
             self.conn.commit()
         except Exception, e:
