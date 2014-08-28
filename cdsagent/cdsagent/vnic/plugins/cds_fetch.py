@@ -1,8 +1,8 @@
-import datetime
 import logging
 
 from cdsagent.common.mongodb import MongoBase
 from cdsagent import exc
+from cdsagent import utils
 
 __author__ = 'Hardy.zheng'
 
@@ -36,10 +36,15 @@ class MongoFetcher(MongoBase):
     def get_timestamp(self):
         stamp = self.db.timestamp.find_one()
         if not stamp:
-            timestamp = datetime.datetime.now().replace(second=0, microsecond=0)
+            timestamp = utils.now()
             self.db.timestamp.save({"last_stamp": timestamp})
-            return timestamp
+            return None
         return stamp['last_stamp']
+
+    def update_timestamp(self):
+        oldstamp = self.db.timestamp.find_one()
+        oldstamp['last_stamp'] = utils.now()
+        self.db.timestamp.save(oldstamp)
 
     def fetch(self):
         LOG.info('MongoFetcher fetch')
@@ -47,7 +52,13 @@ class MongoFetcher(MongoBase):
         if not self.set_lock():
             raise exc.IsLock('already lock')
         timestamp = self.get_timestamp()
+        if not timestamp:
+            return None
+
+        LOG.debug('last processing time: %s' % timestamp)
+
         packets = self.db.log.find({'stamp': {'$gt': timestamp}})
+        self.update_timestamp()
         if not packets:
             return None
         else:

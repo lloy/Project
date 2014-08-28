@@ -21,6 +21,10 @@ def utcnow():
     return datetime.datetime.utcnow()
 
 
+def now():
+    return datetime.datetime.now().replace(second=0, microsecond=0)
+
+
 def delta_seconds(before, after):
     """Return the difference between two timing objects.
 

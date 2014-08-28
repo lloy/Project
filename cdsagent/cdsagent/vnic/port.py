@@ -1,5 +1,7 @@
 import logging
 import copy
+import traceback
+
 
 from cdsagent import cfg
 from cdsagent import utils
@@ -101,25 +103,34 @@ class PortPoller(BasePoller):
     def get_packet(self, ip, packets_set):
         LOG.debug('get_packet call')
         LOG.debug('ip: %s' % ip)
-        rxs = {}
-        txs = {}
+        rxs = {'rpacket': 0, 'rbyte': 0}
+        txs = {'tpacket': 0, 'tbyte': 0}
         for count in packets_set:
-            LOG.debug('count : %s' % str(count))
+            # LOG.debug('count : %s' % str(count))
+
+            # incoming traffic
             in_traffic = count.get(self.rx, None)
             if not in_traffic:
                 continue
-            LOG.debug('in_traffic : %s' % in_traffic)
+            # LOG.debug('in_traffic : %s' % in_traffic)
             for inpacket in in_traffic.split('\n'):
-                LOG.debug('inpacket: %s' % inpacket)
                 if ip in inpacket:
+                    LOG.debug('inpacket: %s' % inpacket)
                     LOG.debug('inpacket ipxxx : %s' % ip)
-                    self._count_packet(rxs, ip, inpacket, sign='rx')
+                    self._count_packet(rxs, inpacket, sign='rx')
                     break
-            for outpacket in count[self.tx].split('\n'):
+
+            # output traffic
+            out_traffic = count.get(self.tx, None)
+            if not out_traffic:
+                continue
+            for outpacket in out_traffic.split('\n'):
                 if ip in outpacket:
+                    LOG.debug('outpacket: %s' % outpacket)
                     LOG.debug('outpacket ipxxx : %s' % ip)
-                    self._count_packet(txs, ip, outpacket, sign='tx')
+                    self._count_packet(txs, outpacket, sign='tx')
                     break
+
         if rxs and txs:
             return rxs['rpacket'], rxs['rbyte'], txs['tpacket'], txs['tbyte']
         elif rxs and not txs:
@@ -129,21 +140,15 @@ class PortPoller(BasePoller):
         else:
             return 0, 0, 0, 0
 
-    def _count_packet(self, rtx, ip, packet, sign=None):
+    def _count_packet(self, rtx, packet, sign=None):
         ip, num, size = packet.split()
         LOG.debug('ip %s num %d size %d' % (ip, int(num), int(size)))
-        if rtx.get(ip, None):
-            if sign == 'rx':
-                rtx[ip]['rpacket'] += int(num)
-                rtx[ip]['rbyte'] += int(size)
-            else:
-                rtx[ip]['tpacket'] += int(num)
-                rtx[ip]['tbyte'] += int(size)
+        if sign == 'rx':
+            rtx['rpacket'] += int(num)
+            rtx['rbyte'] += int(size)
         else:
-            if sign == 'rx':
-                rtx[ip] = {'rpacket': int(num), 'rbyte': int(size)}
-            else:
-                rtx[ip] = {'tpacket': int(num), 'tbyte': int(size)}
+            rtx['tpacket'] += int(num)
+            rtx['tbyte'] += int(size)
 
     def run(self):
         LOG.info('PortPoller starting ...')
@@ -159,8 +164,9 @@ class PortPoller(BasePoller):
                 LOG.warning('not fetch net traffic')
                 return
             for ip in ips:
-                packets_copies = copy.copy(packets)
-                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip['ip'], packets_copies)
+                packet_copies = copy.copy(packets)
+                rpacket, rbyte, tpacket, tbyte = self.get_packet(ip['ip'],
+                                                                 packet_copies)
                 q = {'instance_uuid': ip['instance_id'],
                      'ip': ip['ip'],
                      'rpackets': rpacket,
@@ -172,5 +178,6 @@ class PortPoller(BasePoller):
                 LOG.info('pusher data %s' % str(q))
                 self.pusher.push(**q)
                 # self.clear()
-        except Exception, e:
-            LOG.error('PortPoller Error: %s' % str(e))
+        except Exception:
+            exstr = traceback.format_exc()
+            LOG.error('PortPoller Error: %s\n' % str(exstr))
